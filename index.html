@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <style>
+        :root {
+            --pink: #ff85a1;
+            --dark-pink: #ff477e;
+        }
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: #fff0f3;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+        .screen {
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; position: relative;
+        }
+        .hidden { display: none !important; }
+
+        /* Emoji Rain */
+        .emoji {
+            position: fixed; top: -50px;
+            font-size: 24px;
+            animation: fall linear forwards;
+            z-index: 999;
+        }
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+
+        /* Animations */
+        .fade-in { opacity: 0; transition: opacity 2s; }
+        .visible { opacity: 1; }
+
+        /* Cake & Candle */
+        .cake { font-size: 100px; position: relative; cursor: pointer; }
+        .flame {
+            position: absolute; top: -20px; left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            animation: flicker 0.1s infinite;
+        }
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-52%) scale(1.1); }
+            100% { transform: translateX(-48%) scale(1); }
+        }
+
+        /* Gift Grid */
+        .gift-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .gift-box {
+            width: 100px; height: 100px;
+            background: var(--dark-pink);
+            display: flex; align-items: center; justify-content: center;
+            color: white; cursor: pointer; border-radius: 10px;
+        }
+        .photo-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); color: white;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="bday-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <section id="page1" class="screen">
+        <h1>💖 Happy Birthday!! 💖</h1>
+        <button onclick="startApp()" style="padding: 15px 30px; font-size: 20px; cursor: pointer;">Click Here</button>
+    </section>
+
+    <section id="page2" class="screen hidden">
+        <h2 id="countdown">Calculating...</h2>
+        
+        <div id="story-container">
+            <p class="fade-in">You are special...</p>
+            <p class="fade-in">Every year you shine brighter...</p>
+            <p class="fade-in">Today is all about you!</p>
+        </div>
+
+        <div id="cake-section" class="hidden">
+            <div class="cake" onclick="blowCandle()">
+                <div class="flame" id="flame">🔥</div>
+                🎂
+            </div>
+            <p id="candle-msg">Blow the candle (Click it!)</p>
+        </div>
+    </section>
+
+    <section id="page3" class="screen hidden">
+        <h2>Open the Gifts!</h2>
+        <div class="gift-container">
+            <div class="gift-box" onclick="openGift(1)">🎁</div>
+            <div class="gift-box" onclick="openGift(2)">🎁</div>
+            <div class="gift-box" onclick="openGift(3)">🎁</div>
+            <div class="gift-box" onclick="openGift(4)">🎁</div>
+        </div>
+        <div id="final-msg" class="hidden" style="margin-top: 500px; padding-bottom: 50px;">
+            <h2>You are loved! Happy Birthday Forever! 🎊</h2>
+        </div>
+    </section>
+
+    <div id="photoModal" class="photo-overlay hidden">
+        <img id="modalImg" src="" style="max-width: 80%; border-radius: 10px;">
+        <p id="modalTxt"></p>
+        <button onclick="closeGift()">Open Next</button>
+    </div>
+
+    <script>
+        const bday = new Date("August 14, 2026 00:00:00").getTime(); // Adjust Year as needed
+
+        function startApp() {
+            document.getElementById('page1').classList.add('hidden');
+            document.getElementById('page2').classList.remove('hidden');
+            document.getElementById('bgMusic').play();
+            startEmojiRain();
+            updateCountdown();
+            startFadingText();
+        }
+
+        function startEmojiRain() {
+            const emojis = ['💖', '🎂', '🎊', '🎉', '✨'];
+            setInterval(() => {
+                const e = document.createElement('div');
+                e.className = 'emoji';
+                e.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                e.style.left = Math.random() * 100 + "vw";
+                e.style.animationDuration = (Math.random() * 3 + 2) + "s";
+                document.body.appendChild(e);
+                setTimeout(() => e.remove(), 5000);
+            }, 300);
+        }
+
+        function updateCountdown() {
+            setInterval(() => {
+                const now = new Date().getTime();
+                const diff = bday - now;
+                const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+                const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('countdown').innerHTML = `${months} Months, ${days} Days, ${seconds} Seconds Left!`;
+            }, 1000);
+        }
+
+        function startFadingText() {
+            const paras = document.querySelectorAll('#story-container p');
+            paras.forEach((p, i) => {
+                setTimeout(() => {
+                    p.classList.add('visible');
+                    window.scrollBy(0, 100);
+                }, i * 3000);
+            });
+            setTimeout(() => {
+                document.getElementById('cake-section').classList.remove('hidden');
+            }, paras.length * 3000);
+        }
+
+        function blowCandle() {
+            document.getElementById('flame').classList.add('hidden');
+            document.getElementById('candle-msg').innerText = "LET'S GO!!";
+            setTimeout(() => {
+                document.getElementById('page2').classList.add('hidden');
+                document.getElementById('page3').classList.remove('hidden');
+            }, 2000);
+        }
+
+        const giftData = {
+            1: { img: 'photo1.jpg', msg: 'The best memories!' },
+            2: { img: 'photo2.jpg', msg: 'Stay shining!' },
+            3: { img: 'photo3.jpg', msg: 'Keep smiling!' },
+            4: { img: 'photo4.jpg', msg: 'To many more!' }
+        };
+
+        function openGift(id) {
+            document.getElementById('modalImg').src = giftData[id].img;
+            document.getElementById('modalTxt').innerText = giftData[id].msg;
+            document.getElementById('photoModal').classList.remove('hidden');
+        }
+
+        function closeGift() {
+            document.getElementById('photoModal').classList.add('hidden');
+            document.getElementById('final-msg').classList.remove('hidden');
+            // Auto scroll to end
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+  </html>
